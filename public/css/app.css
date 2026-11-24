@@ -55,7 +55,7 @@ h2{font-size:1.9rem;margin:0}
 .cat:hover{border-color:var(--gold);transform:translateY(-2px);color:var(--gold-l)}
 .cat-ico{color:var(--gold);font-size:1.1rem;width:22px;text-align:center}
 .cat-n{margin-left:auto;color:var(--gold);font-size:.75rem}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:18px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:18px}
 .grid-3{grid-template-columns:repeat(auto-fill,minmax(210px,1fr))}
 .card{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:var(--r);overflow:hidden;background:linear-gradient(180deg,var(--surface),#090e1a);color:var(--text);transition:.25s}
 .card:hover{transform:translateY(-4px);border-color:rgba(201,169,110,.55);box-shadow:0 20px 40px -24px rgba(201,169,110,.45);color:var(--text)}
