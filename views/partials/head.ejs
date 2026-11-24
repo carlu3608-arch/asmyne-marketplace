@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="<%= lang %>">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title><%= typeof pageTitle !== 'undefined' ? pageTitle + ' · ' : '' %><%= t('brand') %> · Asmyne Group</title>
+<meta name="description" content="<%= t('heroText') %>">
+<meta name="theme-color" content="#050810">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/app.css?v=1">
+<script src="/js/app.js?v=1" defer></script>
+</head>
+<body>
+<header class="nav">
+  <div class="wrap nav-row">
+    <a class="logo" href="/"><span class="logo-mark">A</span><span class="logo-txt"><b><%= t('brand') %></b><small><%= t('by') %></small></span></a>
+    <form class="nav-search" action="/search" method="get" role="search">
+      <input name="q" value="<%= (typeof q !== 'undefined' && q) ? q : '' %>" placeholder="<%= t('searchPh') %>" aria-label="<%= t('search') %>" maxlength="100">
+      <button aria-label="<%= t('search') %>">⌕</button>
+    </form>
+    <nav class="nav-links" id="navLinks">
+      <a href="/search"><%= t('categories') %></a>
+      <% if (user) { %>
+        <a href="/messages"><%= t('messages') %></a>
+        <a href="/dashboard"><%= t('dashboard') %></a>
+        <% if (user.role === 'admin') { %><a href="/admin"><%= t('admin') %></a><% } %>
+        <form action="/logout" method="post" class="inline"><button class="linkbtn"><%= t('logout') %></button></form>
+      <% } else { %>
+        <a href="/login"><%= t('login') %></a>
+        <a class="btn btn-gold btn-sm" href="/signup?role=seller"><%= t('sell') %></a>
+      <% } %>
+      <select class="lang" id="langSel" aria-label="<%= t('language') %>">
+        <% LANGS.forEach(function(l){ %><option value="<%= l %>" <%= l===lang?'selected':'' %>><%= l.toUpperCase() %></option><% }) %>
+      </select>
+    </nav>
+    <button class="burger" id="burger" aria-label="menu">☰</button>
+  </div>
+</header>
+<main>

@@ -1,0 +1,27 @@
+{
+  "name": "asmyne-marketplace",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Marketplace Global — Asmyne Group (MVP)",
+  "main": "src/server.js",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js"
+  },
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "compression": "^1.8.2",
+    "cookie-parser": "^1.4.7",
+    "ejs": "^7.0.2",
+    "express": "^4.22.3",
+    "express-rate-limit": "^8.7.5",
+    "helmet": "^8.3.0",
+    "jsonwebtoken": "^9.0.3",
+    "mongoose": "^8.24.11",
+    "multer": "^2.5.0",
+    "sharp": "^0.35.5"
+  }
+}

@@ -1,0 +1,48 @@
+<%- include('partials/head', { pageTitle: category ? category.name[lang] : t('search') }) %>
+<section class="wrap section">
+  <div class="crumbs"><a href="/"><%= t('home') %></a> / <% if (category) { %><%= category.name[lang] %><% } else { %><%= t('search') %><% } %></div>
+  <h1 class="page-h"><%= category ? category.name[lang] : (q ? '“' + q + '”' : t('allCats')) %></h1>
+  <p class="muted"><%= total %> <%= t('results') %></p>
+  <div class="search-layout">
+    <aside class="filters">
+      <details open id="filtersBox"><summary><%= t('filters') %></summary>
+      <form method="get" action="<%= basePath %>">
+        <% if (q) { %><input type="hidden" name="q" value="<%= q %>"><% } %>
+        <% if (!forcedCat) { %>
+        <label><%= t('category') %>
+          <select name="cat"><option value=""><%= t('allCats') %></option>
+            <% CATEGORIES.forEach(function(c){ %><option value="<%= c.slug %>" <%= cat===c.slug?'selected':'' %>><%= c.name[lang] %></option><% }) %>
+          </select></label>
+        <% } %>
+        <div class="row2">
+          <label><%= t('priceMin') %><input type="number" name="min" min="0" step="any" value="<%= min ?? '' %>"></label>
+          <label><%= t('priceMax') %><input type="number" name="max" min="0" step="any" value="<%= max ?? '' %>"></label>
+        </div>
+        <label><%= t('condition') %>
+          <select name="cond"><option value=""><%= t('any') %></option>
+            <% ['new','used','refurbished'].forEach(function(c){ %><option value="<%= c %>" <%= cond===c?'selected':'' %>><%= t(c) %></option><% }) %>
+          </select></label>
+        <label><%= t('sort') %>
+          <select name="sort">
+            <option value="new" <%= sort==='new'?'selected':'' %>><%= t('sortNew') %></option>
+            <option value="price_asc" <%= sort==='price_asc'?'selected':'' %>><%= t('sortPriceAsc') %></option>
+            <option value="price_desc" <%= sort==='price_desc'?'selected':'' %>><%= t('sortPriceDesc') %></option>
+          </select></label>
+        <button class="btn btn-gold btn-block"><%= t('apply') %></button>
+        <a class="btn btn-ghost btn-block" href="<%= basePath %>"><%= t('clear') %></a>
+      </form></details>
+    </aside>
+    <div>
+      <% if (items.length) { %><div class="grid grid-3"><% items.forEach(function(it){ %><%- include('partials/card', { it }) %><% }) %></div>
+      <% } else { %><div class="empty"><%= t('noResults') %></div><% } %>
+      <% if (pages > 1) { %>
+      <nav class="pager">
+        <% if (page > 1) { %><a class="btn btn-ghost btn-sm" href="<%= basePath + qs(page-1) %>">← <%= t('prev') %></a><% } %>
+        <span><%= t('page') %> <%= page %> <%= t('of') %> <%= pages %></span>
+        <% if (page < pages) { %><a class="btn btn-ghost btn-sm" href="<%= basePath + qs(page+1) %>"><%= t('next') %> →</a><% } %>
+      </nav>
+      <% } %>
+    </div>
+  </div>
+</section>
+<%- include('partials/foot') %>

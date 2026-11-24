@@ -1,0 +1,53 @@
+<%- include('partials/head', { pageTitle: item.title }) %>
+<section class="wrap section">
+  <div class="crumbs"><a href="/"><%= t('home') %></a> / <a href="/c/<%= item.category %>"><%= category ? category.name[lang] : '' %></a></div>
+  <div class="pd">
+    <div class="gallery">
+      <div class="g-main">
+        <% if (item.images.length) { %><img id="gMain" src="/img/<%= item.images[0] %>" alt="<%= item.title %>"><% } else { %><div class="noimg big">A</div><% } %>
+        <% if (item.isDemo) { %><span class="badge-demo lg"><%= t('demoNote') %></span><% } %>
+      </div>
+      <% if (item.images.length > 1) { %>
+      <div class="g-thumbs"><% item.images.forEach(function(id, i){ %><button class="g-thumb <%= i===0?'on':'' %>" data-src="/img/<%= id %>"><img src="/img/<%= id %>" alt=""></button><% }) %></div>
+      <% } %>
+    </div>
+    <div class="pd-info">
+      <div class="pd-tags"><span class="tag"><%= t(item.condition) %></span><span class="tag"><%= category ? category.name[lang] : '' %></span>
+        <% if (item.status !== 'active') { %><span class="tag warn"><%= t(item.status) %></span><% } %>
+        <% if (item.moderation !== 'approved') { %><span class="tag warn"><%= t(item.moderation) %></span><% } %></div>
+      <h1 class="pd-title"><%= item.title %></h1>
+      <div class="pd-price"><%= fmt(item.price, item.currency) %></div>
+      <p class="muted"><%= t('stock') %>: <b><%= item.stock %></b> · <%= t('views') %>: <%= item.views %></p>
+      <button class="btn btn-gold btn-block" disabled title="<%= t('paySoon') %>"><%= t('buyNow') %></button>
+      <p class="hint"><%= t('paySoon') %></p>
+      <div class="seller-box">
+        <div class="avatar"><%= item.seller.name.slice(0,1).toUpperCase() %></div>
+        <div><div class="muted sm"><%= t('seller') %></div><b><%= item.seller.name %></b>
+          <div class="muted sm"><%= t('memberSince') %> <%= new Date(item.seller.createdAt).getFullYear() %> · <%= sellerCount %> <%= t('listings').toLowerCase() %></div></div>
+      </div>
+      <% if (isOwner) { %>
+        <a class="btn btn-ghost btn-block" href="/dashboard/edit/<%= item._id %>"><%= t('edit') %></a>
+      <% } else { %>
+      <div class="contact" id="contact">
+        <h3><%= t('contactSeller') %></h3>
+        <% if (sent) { %><div class="ok"><%= t('msgSent') %></div><% } %>
+        <% if (user) { %>
+          <form method="post" action="/p/<%= item._id %>/contact">
+            <textarea name="body" rows="3" maxlength="2000" required placeholder="<%= t('msgPh') %>"></textarea>
+            <button class="btn btn-gold btn-block"><%= t('send') %></button>
+          </form>
+        <% } else { %>
+          <p class="muted"><%= t('loginToContact') %></p>
+          <a class="btn btn-ghost btn-block" href="/login?next=<%= encodeURIComponent('/p/' + item._id) %>"><%= t('login') %></a>
+        <% } %>
+      </div>
+      <% } %>
+    </div>
+  </div>
+  <div class="pd-desc"><h2><%= t('description') %></h2><p><%= item.description %></p></div>
+  <% if (related.length) { %>
+  <div class="sec-head"><h2><%= t('seeAll') %> · <%= category ? category.name[lang] : '' %></h2></div>
+  <div class="grid"><% related.forEach(function(it){ %><%- include('partials/card', { it }) %><% }) %></div>
+  <% } %>
+</section>
+<%- include('partials/foot') %>

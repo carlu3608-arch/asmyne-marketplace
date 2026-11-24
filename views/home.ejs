@@ -1,0 +1,47 @@
+<%- include('partials/head') %>
+<section class="hero">
+  <div class="hero-glow"></div>
+  <div class="wrap hero-inner">
+    <p class="kicker"><%= t('heroKicker') %></p>
+    <h1><%= t('heroTitle') %></h1>
+    <div class="rule"></div>
+    <p class="lead"><%= t('heroText') %></p>
+    <form class="hero-search" action="/search" method="get">
+      <input name="q" placeholder="<%= t('searchPh') %>" maxlength="100" aria-label="<%= t('search') %>">
+      <button class="btn btn-gold"><%= t('search') %></button>
+    </form>
+    <div class="hero-ctas">
+      <a class="btn btn-gold" href="/search"><%= t('heroCta') %></a>
+      <a class="btn btn-ghost" href="<%= user ? '/dashboard/new' : '/signup?role=seller' %>"><%= t('heroSell') %></a>
+    </div>
+  </div>
+</section>
+
+<section class="wrap section">
+  <div class="sec-head"><h2><%= t('categories') %></h2><a href="/search"><%= t('seeAll') %> →</a></div>
+  <div class="cats">
+    <% CATEGORIES.forEach(function(c){ %>
+      <a class="cat" href="/c/<%= c.slug %>"><span class="cat-ico"><%= c.icon %></span><span class="cat-name"><%= c.name[lang] %></span><% if (counts[c.slug]) { %><span class="cat-n"><%= counts[c.slug] %></span><% } %></a>
+    <% }) %>
+  </div>
+</section>
+
+<section class="wrap section">
+  <div class="sec-head"><h2><%= t('featured') %></h2><a href="/search"><%= t('seeAll') %> →</a></div>
+  <% if (featured.length) { %><div class="grid"><% featured.forEach(function(it){ %><%- include('partials/card', { it }) %><% }) %></div>
+  <% } else { %><p class="muted"><%= t('empty') %></p><% } %>
+</section>
+
+<section class="wrap section">
+  <div class="sec-head"><h2><%= t('latest') %></h2><a href="/search"><%= t('seeAll') %> →</a></div>
+  <% if (latest.length) { %><div class="grid"><% latest.forEach(function(it){ %><%- include('partials/card', { it }) %><% }) %></div>
+  <% } else { %><p class="muted"><%= t('empty') %></p><% } %>
+</section>
+
+<section class="wrap section">
+  <div class="sell-band">
+    <div><h2><%= t('heroSell') %></h2><p class="muted"><%= t('moderationNote') %></p></div>
+    <a class="btn btn-gold" href="<%= user ? '/dashboard/new' : '/signup?role=seller' %>"><%= t('newListing') %></a>
+  </div>
+</section>
+<%- include('partials/foot') %>

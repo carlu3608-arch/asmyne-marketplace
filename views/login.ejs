@@ -1,0 +1,15 @@
+<%- include('partials/head', { pageTitle: t('login') }) %>
+<section class="wrap auth">
+  <div class="panel">
+    <h1 class="page-h"><%= t('login') %></h1>
+    <% if (error) { %><div class="err"><%= t(error) %></div><% } %>
+    <form method="post" action="/login">
+      <input type="hidden" name="next" value="<%= next %>">
+      <label><%= t('email') %><input type="email" name="email" required maxlength="160" value="<%= form.email || '' %>" autocomplete="email"></label>
+      <label><%= t('password') %><input type="password" name="password" required maxlength="200" autocomplete="current-password"></label>
+      <button class="btn btn-gold btn-block"><%= t('login') %></button>
+    </form>
+    <p class="muted center"><%= t('noAccount') %> <a href="/signup"><%= t('signup') %></a></p>
+  </div>
+</section>
+<%- include('partials/foot') %>

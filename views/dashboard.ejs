@@ -1,0 +1,29 @@
+<%- include('partials/head', { pageTitle: t('dashboard') }) %>
+<section class="wrap section">
+  <div class="sec-head"><h1 class="page-h"><%= t('welcome') %>, <%= user.name %></h1>
+    <a class="btn btn-ghost btn-sm" href="/messages"><%= t('messages') %><% if (unread) { %> <span class="pill"><%= unread %></span><% } %></a></div>
+  <% if (m) { %><div class="ok"><%= t(m) %></div><% } %>
+  <% if (user.role === 'buyer') { %>
+    <div class="panel"><h2><%= t('becomeSeller') %></h2><p class="muted"><%= t('becomeSellerText') %></p>
+      <form method="post" action="/dashboard/become-seller"><button class="btn btn-gold"><%= t('becomeSeller') %></button></form></div>
+  <% } else { %>
+    <div class="sec-head"><h2><%= t('myListings') %></h2><a class="btn btn-gold btn-sm" href="/dashboard/new">+ <%= t('newListing') %></a></div>
+    <% if (!listings.length) { %><div class="empty"><%= t('empty') %></div><% } %>
+    <div class="dash-list">
+      <% listings.forEach(function(it){ %>
+      <div class="dash-item">
+        <a href="/p/<%= it._id %>" class="dash-thumb"><% if (it.images.length) { %><img src="/img/<%= it.images[0] %>" alt=""><% } else { %><div class="noimg">A</div><% } %></a>
+        <div class="dash-main"><a href="/p/<%= it._id %>"><b><%= it.title %></b></a>
+          <div class="muted sm"><%= fmt(it.price, it.currency) %> · <%= t('stock') %> <%= it.stock %> · <%= t('views') %> <%= it.views %></div>
+          <div><span class="tag <%= it.status==='active'?'good':'' %>"><%= t(it.status) %></span> <% if (it.moderation!=='approved') { %><span class="tag warn"><%= t(it.moderation) %></span><% } %></div></div>
+        <div class="dash-actions">
+          <a class="btn btn-ghost btn-sm" href="/dashboard/edit/<%= it._id %>"><%= t('edit') %></a>
+          <form method="post" action="/dashboard/toggle/<%= it._id %>"><button class="btn btn-ghost btn-sm"><%= it.status==='active' ? t('paused') : t('active') %></button></form>
+          <form method="post" action="/dashboard/delete/<%= it._id %>" class="js-confirm" data-msg="<%= t('confirmDelete') %>"><button class="btn btn-danger btn-sm"><%= t('delete') %></button></form>
+        </div>
+      </div>
+      <% }) %>
+    </div>
+  <% } %>
+</section>
+<%- include('partials/foot') %>

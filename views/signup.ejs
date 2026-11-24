@@ -1,0 +1,20 @@
+<%- include('partials/head', { pageTitle: t('signup') }) %>
+<section class="wrap auth">
+  <div class="panel">
+    <h1 class="page-h"><%= t('signup') %></h1>
+    <% if (error) { %><div class="err"><%= t(error) %></div><% } %>
+    <form method="post" action="/signup">
+      <input type="hidden" name="next" value="<%= next || '' %>">
+      <label><%= t('name') %><input name="name" required minlength="2" maxlength="80" value="<%= form.name || '' %>" autocomplete="name"></label>
+      <label><%= t('email') %><input type="email" name="email" required maxlength="160" value="<%= form.email || '' %>" autocomplete="email"></label>
+      <label><%= t('password') %><input type="password" name="password" required minlength="8" maxlength="200" autocomplete="new-password"><small class="muted"><%= t('pwHint') %></small></label>
+      <fieldset class="roles"><legend><%= t('accountType') %></legend>
+        <label class="radio"><input type="radio" name="role" value="buyer" <%= form.role !== 'seller' ? 'checked' : '' %>> <%= t('buyer') %></label>
+        <label class="radio"><input type="radio" name="role" value="seller" <%= form.role === 'seller' ? 'checked' : '' %>> <%= t('sellerRole') %></label>
+      </fieldset>
+      <button class="btn btn-gold btn-block"><%= t('signup') %></button>
+    </form>
+    <p class="muted center"><%= t('haveAccount') %> <a href="/login"><%= t('login') %></a></p>
+  </div>
+</section>
+<%- include('partials/foot') %>

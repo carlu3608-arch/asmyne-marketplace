@@ -1,0 +1,49 @@
+<%- include('partials/head', { pageTitle: t('admin') }) %>
+<section class="wrap section">
+  <h1 class="page-h"><%= t('admin') %></h1>
+  <div class="stats">
+    <div class="stat"><b><%= stats.users %></b><span><%= t('users') %></span></div>
+    <div class="stat"><b><%= stats.sellers %></b><span><%= t('sellerRole') %></span></div>
+    <div class="stat"><b><%= stats.listings %></b><span><%= t('listings') %></span></div>
+    <div class="stat"><b><%= stats.pending %></b><span><%= t('pending') %></span></div>
+    <div class="stat"><b><%= stats.removed %></b><span><%= t('removed') %></span></div>
+    <div class="stat"><b><%= stats.messages %></b><span><%= t('messages') %></span></div>
+  </div>
+  <div class="tabs"><a class="<%= tab==='listings'?'on':'' %>" href="/admin"><%= t('listings') %></a><a class="<%= tab==='users'?'on':'' %>" href="/admin?tab=users"><%= t('users') %></a></div>
+  <form class="admin-filter" method="get" action="/admin">
+    <% if (tab==='users') { %><input type="hidden" name="tab" value="users"><% } %>
+    <input name="q" value="<%= q %>" placeholder="<%= t('search') %>…" maxlength="100">
+    <% if (tab==='listings') { %><select name="mod"><option value=""><%= t('any') %></option><% ['approved','pending','removed'].forEach(function(s){ %><option value="<%= s %>" <%= mod===s?'selected':'' %>><%= s==='approved'?t('active'):t(s) %></option><% }) %></select><% } %>
+    <button class="btn btn-gold btn-sm"><%= t('apply') %></button>
+  </form>
+  <div class="table-wrap"><table class="tbl">
+  <% if (tab==='listings') { %>
+    <thead><tr><th></th><th><%= t('title') %></th><th><%= t('seller') %></th><th><%= t('price') %></th><th><%= t('status') %></th><th><%= t('actions') %></th></tr></thead>
+    <tbody><% rows.forEach(function(it){ %><tr>
+      <td><% if (it.images.length) { %><img class="tthumb" src="/img/<%= it.images[0] %>" alt=""><% } %></td>
+      <td><a href="/p/<%= it._id %>"><%= it.title %></a><% if (it.featured) { %> <span class="tag good">★</span><% } %></td>
+      <td><%= it.seller ? it.seller.name : '—' %><div class="muted sm"><%= it.seller ? it.seller.email : '' %></div></td>
+      <td><%= fmt(it.price, it.currency) %></td>
+      <td><span class="tag"><%= t(it.status) %></span> <span class="tag <%= it.moderation==='approved'?'good':'warn' %>"><%= it.moderation==='approved' ? '✓' : t(it.moderation) %></span></td>
+      <td class="acts">
+        <% if (it.moderation!=='approved') { %><form method="post" action="/admin/listing/<%= it._id %>/approve"><button class="btn btn-gold btn-sm"><%= t('approve') %></button></form><% } %>
+        <% if (it.moderation!=='removed') { %><form method="post" action="/admin/listing/<%= it._id %>/remove"><button class="btn btn-ghost btn-sm"><%= t('remove') %></button></form><% } %>
+        <form method="post" action="/admin/listing/<%= it._id %>/feature"><button class="btn btn-ghost btn-sm">★</button></form>
+        <form method="post" action="/admin/listing/<%= it._id %>/delete" class="js-confirm" data-msg="<%= t('confirmDelete') %>"><button class="btn btn-danger btn-sm"><%= t('delete') %></button></form>
+      </td></tr><% }) %></tbody>
+  <% } else { %>
+    <thead><tr><th><%= t('name') %></th><th><%= t('email') %></th><th><%= t('role') %></th><th><%= t('memberSince') %></th><th><%= t('actions') %></th></tr></thead>
+    <tbody><% rows.forEach(function(u){ %><tr>
+      <td><%= u.name %></td><td><%= u.email %></td>
+      <td><span class="tag"><%= u.role %></span><% if (u.banned) { %> <span class="tag warn"><%= t('ban') %></span><% } %></td>
+      <td><%= new Date(u.createdAt).toLocaleDateString(lang) %></td>
+      <td class="acts"><% if (u.role!=='admin') { %>
+        <% if (u.banned) { %><form method="post" action="/admin/user/<%= u._id %>/unban"><button class="btn btn-ghost btn-sm"><%= t('unban') %></button></form>
+        <% } else { %><form method="post" action="/admin/user/<%= u._id %>/ban" class="js-confirm" data-msg="<%= t('ban') %>?"><button class="btn btn-danger btn-sm"><%= t('ban') %></button></form><% } %>
+        <% if (u.role==='buyer') { %><form method="post" action="/admin/user/<%= u._id %>/make-seller"><button class="btn btn-ghost btn-sm"><%= t('sellerRole') %></button></form><% } %>
+      <% } %></td></tr><% }) %></tbody>
+  <% } %>
+  </table></div>
+  <% if (!rows.length) { %><div class="empty"><%= t('empty') %></div><% } %>
+</section>
+<%- include('partials/foot') %>

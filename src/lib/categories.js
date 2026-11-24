@@ -1,0 +1,36 @@
+// Categorías heredadas de los scripts del sitio principal (insert-many-collections.js), traducidas.
+const CATEGORIES = [
+  ['electronica', '⌁', 'Electrónica', 'Electronics', 'Électronique'],
+  ['informatica', '⌘', 'Informática', 'Computers', 'Informatique'],
+  ['telefonia', '✆', 'Telefonía', 'Phones', 'Téléphonie'],
+  ['moda-accesorios', '✧', 'Moda y accesorios', 'Fashion & accessories', 'Mode & Accessoires'],
+  ['ropa-hombre', '◇', 'Ropa de hombre', "Men's clothing", 'Vêtements Homme'],
+  ['ropa-mujer', '◆', 'Ropa de mujer', "Women's clothing", 'Vêtements Femme'],
+  ['calzado', '◈', 'Calzado', 'Shoes', 'Chaussures'],
+  ['bolsos-equipaje', '▣', 'Bolsos y equipaje', 'Bags & luggage', 'Sacs & Bagages'],
+  ['relojes-joyeria', '◎', 'Relojes y joyería', 'Watches & jewelry', 'Montres & Bijoux'],
+  ['belleza-salud', '❀', 'Belleza y salud', 'Beauty & health', 'Beauté & Santé'],
+  ['perfumes', '✿', 'Perfumes', 'Fragrances', 'Parfums'],
+  ['maquillaje', '✦', 'Maquillaje', 'Makeup', 'Maquillage'],
+  ['cuidado-corporal', '❋', 'Cuidado corporal', 'Body care', 'Soins du corps'],
+  ['hogar-deco', '⌂', 'Hogar y deco', 'Home & decor', 'Maison & Déco'],
+  ['decoracion', '✺', 'Decoración', 'Decoration', 'Décoration'],
+  ['muebles', '▤', 'Muebles', 'Furniture', 'Meubles'],
+  ['cocina', '♨', 'Cocina', 'Kitchen', 'Cuisine'],
+  ['alimentacion', '❦', 'Alimentación', 'Food & drinks', 'Alimentation'],
+  ['gourmet', '❧', 'Gourmet', 'Fine foods', 'Épicerie'],
+  ['libros-cultura', '❡', 'Libros y cultura', 'Books & culture', 'Livres & Culture'],
+  ['juegos-juguetes', '✪', 'Juegos y juguetes', 'Games & toys', 'Jeux & Jouets'],
+  ['deporte-ocio', '⚑', 'Deporte y ocio', 'Sports & leisure', 'Sport & Loisirs'],
+  ['ninos-bebes', '☼', 'Niños y bebés', 'Kids & baby', 'Enfants & Bébés'],
+  ['auto-moto', '⛭', 'Auto y moto', 'Auto & moto', 'Auto & Moto'],
+  ['bricolaje', '⚒', 'Bricolaje', 'DIY & tools', 'Bricolage'],
+  ['jardin', '❁', 'Jardín', 'Garden', 'Jardinage'],
+  ['mascotas', '❥', 'Mascotas', 'Pets', 'Animaux'],
+  ['musica', '♫', 'Música', 'Music', 'Musique'],
+  ['foto-video', '◉', 'Foto y video', 'Photo & video', 'Photo & Vidéo'],
+  ['servicios', '✔', 'Servicios', 'Services', 'Services'],
+].map(([slug, icon, es, en, fr]) => ({ slug, icon, name: { es, en, fr } }));
+
+const BY_SLUG = Object.fromEntries(CATEGORIES.map((c) => [c.slug, c]));
+module.exports = { CATEGORIES, BY_SLUG, SLUGS: CATEGORIES.map((c) => c.slug) };

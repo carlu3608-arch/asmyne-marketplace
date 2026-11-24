@@ -1,0 +1,12 @@
+</main>
+<footer class="foot">
+  <div class="wrap foot-row">
+    <div><span class="logo-mark sm">A</span> <b><%= t('brand') %></b> — <%= t('footer') %></div>
+    <div class="foot-links">
+      <% LANGS.forEach(function(l){ %><a href="/lang/<%= l %>"><%= l.toUpperCase() %></a><% }) %>
+      <a href="<%= mainSite %>"><%= t('backToSite') %></a>
+    </div>
+  </div>
+</footer>
+</body>
+</html>

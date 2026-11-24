@@ -1,0 +1,11 @@
+<a class="card" href="/p/<%= it._id %>">
+  <div class="card-img">
+    <% if (it.images && it.images.length) { %><img src="/img/<%= it.images[0] %>" alt="<%= it.title %>" loading="lazy"><% } else { %><div class="noimg">A</div><% } %>
+    <% if (it.isDemo) { %><span class="badge-demo"><%= t('demo') %></span><% } %>
+  </div>
+  <div class="card-body">
+    <div class="card-price"><%= fmt(it.price, it.currency) %></div>
+    <div class="card-title"><%= it.title %></div>
+    <div class="card-meta"><span><%= catName(it.category) %></span><span><%= t(it.condition) %></span></div>
+  </div>
+</a>

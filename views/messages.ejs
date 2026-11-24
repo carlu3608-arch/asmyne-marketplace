@@ -1,0 +1,17 @@
+<%- include('partials/head', { pageTitle: t('messages') }) %>
+<section class="wrap section narrow">
+  <h1 class="page-h"><%= t('inbox') %></h1>
+  <% if (sent) { %><div class="ok"><%= t('msgSent') %></div><% } %>
+  <% if (!msgs.length) { %><div class="empty"><%= t('noMessages') %></div><% } %>
+  <% msgs.forEach(function(m){ var mine = String(m.from._id) === String(user._id); %>
+  <div class="msg <%= mine ? 'mine' : '' %>">
+    <div class="muted sm"><%= mine ? t('to') + ': ' + m.to.name : t('from') + ': ' + m.from.name %> · <%= new Date(m.createdAt).toLocaleString(lang) %>
+      <% if (m.listing) { %> · <%= t('about') %> <a href="/p/<%= m.listing._id %>"><%= m.listing.title %></a><% } %></div>
+    <p><%= m.body %></p>
+    <% if (!mine) { %>
+    <form method="post" action="/messages/reply/<%= m._id %>" class="reply"><input name="body" maxlength="2000" required placeholder="<%= t('reply') %>…"><button class="btn btn-gold btn-sm"><%= t('send') %></button></form>
+    <% } %>
+  </div>
+  <% }) %>
+</section>
+<%- include('partials/foot') %>
