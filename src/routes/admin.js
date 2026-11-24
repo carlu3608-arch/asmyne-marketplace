@@ -1,7 +1,7 @@
 const express = require('express');
 const { User, Listing, Message } = require('../models');
 const { requireAuth, requireAdmin } = require('../lib/auth');
-const { isObjectId, str, escapeRegex, clampInt } = require('../lib/util');
+const { isObjectId, str, escapeRegex, clampInt, flash } = require('../lib/util');
 const { deleteImage } = require('../lib/images');
 
 const r = express.Router();
@@ -25,7 +25,7 @@ r.get('/', async (req, res, next) => {
       const f = {}; if (mod) f.moderation = mod; if (q) f.title = new RegExp(escapeRegex(q), 'i');
       rows = await Listing.find(f).sort({ createdAt: -1 }).skip((page - 1) * 50).limit(50).populate('seller', 'name email').lean();
     }
-    res.render('admin', { tab, rows, stats, q, mod, page });
+    res.render('admin', { tab, rows, stats, q, mod, page, m: flash(req.query.m) });
   } catch (e) { next(e); }
 });
 
@@ -52,6 +52,12 @@ r.post('/user/:id/:action', async (req, res, next) => {
       if (a === 'ban') { u.banned = true; await Listing.updateMany({ seller: u._id }, { moderation: 'removed' }); }
       else if (a === 'unban') u.banned = false;
       else if (a === 'make-seller') u.role = 'seller';
+      else if (a === 'delete') {
+        for (const l of await Listing.find({ seller: u._id })) { for (const id of l.images) await deleteImage(id); await l.deleteOne(); }
+        await Message.deleteMany({ $or: [{ from: u._id }, { to: u._id }] });
+        await u.deleteOne();
+        return res.redirect('/admin?tab=users&m=deleted');
+      }
       await u.save();
     }
     res.redirect('/admin?tab=users');

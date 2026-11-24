@@ -1,0 +1,16 @@
+<%- include('partials/head', { pageTitle: t('profile') }) %>
+<section class="wrap auth">
+  <div class="panel">
+    <h1 class="page-h"><%= t('profile') %></h1>
+    <% if (m) { %><div class="ok"><%= t(m) %></div><% } %>
+    <% if (error) { %><div class="err"><%= t(error) %></div><% } %>
+    <p class="muted sm"><%= user.email %> · <%= user.role === 'admin' ? t('admin') : user.role === 'seller' ? t('sellerRole') : t('buyer') %> · <%= t('memberSince') %> <%= new Date(user.createdAt).getFullYear() %></p>
+    <form method="post" action="/profile">
+      <label><%= t('name') %><input name="name" required minlength="2" maxlength="80" value="<%= user.name %>" autocomplete="name"></label>
+      <label><%= t('newPw') %><input type="password" name="newPassword" minlength="8" maxlength="200" autocomplete="new-password"><small class="muted"><%= t('pwHint') %></small></label>
+      <label><%= t('currentPw') %><input type="password" name="currentPassword" maxlength="200" autocomplete="current-password"></label>
+      <button class="btn btn-gold btn-block"><%= t('save') %></button>
+    </form>
+  </div>
+</section>
+<%- include('partials/foot') %>

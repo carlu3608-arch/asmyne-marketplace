@@ -25,3 +25,7 @@ document.addEventListener('DOMContentLoaded', function () {
     var fb = document.getElementById('filtersBox'); if (fb && !location.search) fb.removeAttribute('open');
   }
 });
+document.addEventListener('click', function (e) {
+  var a = e.target.closest && e.target.closest('.js-back');
+  if (a && history.length > 1) { e.preventDefault(); history.back(); }
+});

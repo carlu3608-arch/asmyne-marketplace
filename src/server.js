@@ -25,6 +25,7 @@ app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, '..', 'views'));
 app.disable('x-powered-by');
 app.use(helmet({
+  referrerPolicy: { policy: 'strict-origin-when-cross-origin' },
   contentSecurityPolicy: { directives: {
     defaultSrc: ["'self'"], imgSrc: ["'self'", 'data:'], styleSrc: ["'self'", 'https://fonts.googleapis.com', "'unsafe-inline'"],
     fontSrc: ["'self'", 'https://fonts.gstatic.com'], scriptSrc: ["'self'"], formAction: ["'self'"], frameAncestors: ["'none'"],
@@ -34,7 +35,6 @@ app.use(compression());
 app.use(express.static(path.join(__dirname, '..', 'public'), { maxAge: '7d' }));
 app.use(express.urlencoded({ extended: false, limit: '100kb' }));
 app.use(cookieParser());
-app.use(sameOrigin);
 app.use(i18n.middleware);
 app.use(loadUser);
 app.use((req, res, next) => {
@@ -45,13 +45,19 @@ app.use((req, res, next) => {
   res.locals.mainSite = process.env.MAIN_SITE_URL || 'https://www.asmynegroup.com';
   next();
 });
+app.use(sameOrigin);
 
 app.get('/healthz', (req, res) => res.json({ ok: mongoose.connection.readyState === 1 }));
 app.use('/', require('./routes/public'));
 app.use('/', require('./routes/account'));
 app.use('/admin', require('./routes/admin'));
-app.use((req, res) => res.status(404).render('404'));
-app.use((err, req, res, next) => { console.error(err); res.status(500).render('404'); });
+app.use((req, res) => res.status(404).render('error', { code: 404, kind: 'notFound' }));
+app.use((err, req, res, next) => {
+  console.error(err);
+  if (res.headersSent) return;
+  const code = err.status === 413 || err.type === 'entity.too.large' ? 413 : 500;
+  try { res.status(code).render('error', { code, kind: code === 413 ? 'tooLarge' : 'server' }); } catch (_) { res.status(code).send('Error'); }
+});
 
 (async () => {
   await mongoose.connect(MONGO_URL, { serverSelectionTimeoutMS: 15000 });

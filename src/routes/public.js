@@ -55,15 +55,15 @@ async function searchHandler(req, res, next, forcedCat) {
   } catch (e) { next(e); }
 }
 r.get('/search', (req, res, next) => searchHandler(req, res, next));
-r.get('/c/:slug', (req, res, next) => (SLUGS.includes(req.params.slug) ? searchHandler(req, res, next, req.params.slug) : res.status(404).render('404')));
+r.get('/c/:slug', (req, res, next) => (SLUGS.includes(req.params.slug) ? searchHandler(req, res, next, req.params.slug) : res.status(404).render('error', { code: 404, kind: 'notFound' })));
 
 r.get('/p/:id', async (req, res, next) => {
   try {
-    if (!isObjectId(req.params.id)) return res.status(404).render('404');
+    if (!isObjectId(req.params.id)) return res.status(404).render('error', { code: 404, kind: 'notFound' });
     const item = await Listing.findById(req.params.id).populate('seller', 'name createdAt').lean();
     const isOwner = req.user && item && String(item.seller._id) === String(req.user._id);
     const isAdmin = req.user && req.user.role === 'admin';
-    if (!item || ((item.status !== 'active' || item.moderation !== 'approved') && !isOwner && !isAdmin)) return res.status(404).render('404');
+    if (!item || ((item.status !== 'active' || item.moderation !== 'approved') && !isOwner && !isAdmin)) return res.status(404).render('error', { code: 404, kind: 'notFound' });
     if (!isOwner) Listing.updateOne({ _id: item._id }, { $inc: { views: 1 } }).catch(() => {});
     const sellerCount = await Listing.countDocuments({ ...PUBLIC, seller: item.seller._id });
     const related = await Listing.find({ ...PUBLIC, category: item.category, _id: { $ne: item._id } }).limit(4).populate('seller', 'name').lean();
@@ -73,7 +73,7 @@ r.get('/p/:id', async (req, res, next) => {
 
 r.post('/p/:id/contact', requireAuth, async (req, res, next) => {
   try {
-    if (!isObjectId(req.params.id)) return res.status(404).render('404');
+    if (!isObjectId(req.params.id)) return res.status(404).render('error', { code: 404, kind: 'notFound' });
     const item = await Listing.findById(req.params.id).lean();
     const body = str(req.body.body, 2000);
     if (!item || !body || String(item.seller) === String(req.user._id)) return res.redirect(`/p/${req.params.id}`);

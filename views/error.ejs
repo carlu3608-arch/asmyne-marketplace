@@ -1,0 +1,12 @@
+<%
+  var map = { notFound: ['notFound','notFoundText'], forbidden: ['errForbiddenT','errForbidden'], server: ['errServerT','errServer'], tooLarge: ['errTooLargeT','errTooLarge'] };
+  var k = map[typeof kind !== 'undefined' && map[kind] ? kind : 'server'];
+%>
+<%- include('partials/head', { pageTitle: t(k[0]) }) %>
+<section class="wrap section center errpage">
+  <div class="err-code"><%= typeof code !== 'undefined' ? code : '' %></div>
+  <h1 class="page-h"><%= t(k[0]) %></h1>
+  <p class="muted"><%= t(k[1]) %></p>
+  <div class="hero-ctas"><a class="btn btn-ghost js-back" href="/"><%= t('retry') %></a><a class="btn btn-gold" href="/"><%= t('home') %></a></div>
+</section>
+<%- include('partials/foot') %>

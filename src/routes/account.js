@@ -74,7 +74,7 @@ r.get('/dashboard/new', requireAuth, requireSeller, (req, res) => res.render('li
 r.post('/dashboard/new', requireAuth, requireSeller, uploadPhotos, async (req, res, next) => {
   try {
     const { v, valid } = parseListing(req.body);
-    if (!valid || req.uploadError) return res.status(400).render('listing-form', { item: null, form: v, error: 'invalidInput', CATEGORIES });
+    if (!valid || req.uploadError) return res.status(400).render('listing-form', { item: null, form: v, error: req.uploadError === 'LIMIT_FILE_SIZE' ? 'errTooLarge' : 'invalidInput', CATEGORIES });
     const images = [];
     for (const f of req.files || []) images.push(await saveImage(f.buffer, { owner: String(req.user._id) }));
     const moderation = process.env.REQUIRE_APPROVAL === 'true' && req.user.role !== 'admin' ? 'pending' : 'approved';
@@ -94,15 +94,15 @@ async function ownListing(req, res) {
 }
 r.get('/dashboard/edit/:id', requireAuth, requireSeller, async (req, res, next) => {
   try {
-    const item = await ownListing(req, res); if (!item) return res.status(404).render('404');
+    const item = await ownListing(req, res); if (!item) return res.status(404).render('error', { code: 404, kind: 'notFound' });
     res.render('listing-form', { item, form: item.toObject(), error: null, CATEGORIES });
   } catch (e) { next(e); }
 });
 r.post('/dashboard/edit/:id', requireAuth, requireSeller, uploadPhotos, async (req, res, next) => {
   try {
-    const item = await ownListing(req, res); if (!item) return res.status(404).render('404');
+    const item = await ownListing(req, res); if (!item) return res.status(404).render('error', { code: 404, kind: 'notFound' });
     const { v, valid } = parseListing(req.body);
-    if (!valid || req.uploadError) return res.status(400).render('listing-form', { item, form: { ...v, images: item.images }, error: 'invalidInput', CATEGORIES });
+    if (!valid || req.uploadError) return res.status(400).render('listing-form', { item, form: { ...v, images: item.images }, error: req.uploadError === 'LIMIT_FILE_SIZE' ? 'errTooLarge' : 'invalidInput', CATEGORIES });
     const removeIds = [].concat(req.body.removeImages || []).map(String);
     const kept = item.images.filter((id) => !removeIds.includes(String(id)));
     for (const id of item.images) if (removeIds.includes(String(id))) await deleteImage(id);
@@ -117,7 +117,7 @@ r.post('/dashboard/edit/:id', requireAuth, requireSeller, uploadPhotos, async (r
 });
 r.post('/dashboard/delete/:id', requireAuth, requireSeller, async (req, res, next) => {
   try {
-    const item = await ownListing(req, res); if (!item) return res.status(404).render('404');
+    const item = await ownListing(req, res); if (!item) return res.status(404).render('error', { code: 404, kind: 'notFound' });
     for (const id of item.images) await deleteImage(id);
     await item.deleteOne();
     res.redirect('/dashboard?m=deleted');
@@ -125,7 +125,7 @@ r.post('/dashboard/delete/:id', requireAuth, requireSeller, async (req, res, nex
 });
 r.post('/dashboard/toggle/:id', requireAuth, requireSeller, async (req, res, next) => {
   try {
-    const item = await ownListing(req, res); if (!item) return res.status(404).render('404');
+    const item = await ownListing(req, res); if (!item) return res.status(404).render('error', { code: 404, kind: 'notFound' });
     item.status = item.status === 'active' ? 'paused' : 'active'; await item.save();
     res.redirect('/dashboard?m=saved');
   } catch (e) { next(e); }
@@ -147,6 +147,24 @@ r.post('/messages/reply/:id', requireAuth, async (req, res, next) => {
     const body = str(req.body.body, 2000);
     if (orig && body) await Message.create({ listing: orig.listing, from: req.user._id, to: orig.from, body });
     res.redirect('/messages?m=msgSent');
+  } catch (e) { next(e); }
+});
+
+r.get('/profile', requireAuth, (req, res) => res.render('profile', { m: flash(req.query.m), error: null }));
+r.post('/profile', requireAuth, authLimiter, async (req, res, next) => {
+  try {
+    const user = await User.findById(req.user._id);
+    const name = str(req.body.name, 80);
+    const cur = typeof req.body.currentPassword === 'string' ? req.body.currentPassword.slice(0, 200) : '';
+    const np = typeof req.body.newPassword === 'string' ? req.body.newPassword : '';
+    if (name.length < 2 || (np && (np.length < 8 || np.length > 200))) return res.status(400).render('profile', { m: null, error: 'invalidInput' });
+    if (np) {
+      if (!(await bcrypt.compare(cur, user.passwordHash))) return res.status(400).render('profile', { m: null, error: 'wrongPw' });
+      user.passwordHash = await bcrypt.hash(np, 12);
+    }
+    user.name = name;
+    await user.save();
+    res.redirect('/profile?m=saved');
   } catch (e) { next(e); }
 });
 

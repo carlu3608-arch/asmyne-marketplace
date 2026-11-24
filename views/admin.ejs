@@ -1,6 +1,7 @@
 <%- include('partials/head', { pageTitle: t('admin') }) %>
 <section class="wrap section">
   <h1 class="page-h"><%= t('admin') %></h1>
+  <% if (m) { %><div class="ok"><%= t(m) %></div><% } %>
   <div class="stats">
     <div class="stat"><b><%= stats.users %></b><span><%= t('users') %></span></div>
     <div class="stat"><b><%= stats.sellers %></b><span><%= t('sellerRole') %></span></div>
@@ -41,6 +42,7 @@
         <% if (u.banned) { %><form method="post" action="/admin/user/<%= u._id %>/unban"><button class="btn btn-ghost btn-sm"><%= t('unban') %></button></form>
         <% } else { %><form method="post" action="/admin/user/<%= u._id %>/ban" class="js-confirm" data-msg="<%= t('ban') %>?"><button class="btn btn-danger btn-sm"><%= t('ban') %></button></form><% } %>
         <% if (u.role==='buyer') { %><form method="post" action="/admin/user/<%= u._id %>/make-seller"><button class="btn btn-ghost btn-sm"><%= t('sellerRole') %></button></form><% } %>
+        <form method="post" action="/admin/user/<%= u._id %>/delete" class="js-confirm" data-msg="<%= t('confirmDeleteUser') %>"><button class="btn btn-danger btn-sm"><%= t('deleteUser') %></button></form>
       <% } %></td></tr><% }) %></tbody>
   <% } %>
   </table></div>
